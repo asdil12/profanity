@@ -337,6 +337,10 @@ _init(char *log_level)
     signal(SIGINT, SIG_IGN);
     signal(SIGTSTP, SIG_IGN);
     signal(SIGWINCH, ui_sigwinch_handler);
+    if (pthread_mutex_init(&lock, NULL) != 0) {
+        log_error("Mutex init failed");
+    }
+    pthread_mutex_lock(&lock);
     _create_directories();
     log_level_t prof_log_level = log_level_from_string(log_level);
     prefs_load();
@@ -424,6 +428,9 @@ _shutdown(void)
     if (saved_status) {
         free(saved_status);
     }
+    //FIXME: kill all threads
+    //pthread_mutex_unlock(&lock);
+    //pthread_mutex_destroy(&lock);
 }
 
 static void
